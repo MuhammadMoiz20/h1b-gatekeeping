@@ -83,8 +83,9 @@ drop corporate suffixes.
 **Match rate: 72.6% of employer-years, covering 86.0% of initial petitions** (FY2017–FY2022;
 FY2023 matches at 0% by construction since DOL coverage stops at FY2022).
 
-The gap between those two figures is the caveat that matters: match rate rises
-monotonically with employer size, so the wage subsample tilts toward larger sponsors.
+The gap between those two figures is the caveat that matters: match rate is far higher
+for large sponsors (86-89% in the top two deciles) than for single-petition ones (59-68%),
+though not monotonically so, and the wage subsample therefore tilts toward larger sponsors.
 `04_models` therefore refits the no-wage baseline on the matched subsample, so the
 with-versus-without comparison isolates the features rather than the sample.
 
