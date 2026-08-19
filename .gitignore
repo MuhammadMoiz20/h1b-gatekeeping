@@ -1,0 +1,11 @@
+# Raw DOL LCA workbooks: ~1.8 GB, downloaded manually (see code/00_pull.ipynb).
+# Not redistributable through git; regenerate by downloading from DOL OFLC.
+data/lca
+data/lca_slim
+
+# Environments and caches
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.DS_Store
