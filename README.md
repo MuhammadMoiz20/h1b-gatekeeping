@@ -129,13 +129,6 @@ jupyter nbconvert --to notebook --execute --inplace 04_models.ipynb
 All paths resolve from the repository root, so the notebooks run from any checkout
 location. Random seed is 45 throughout.
 
-## AI tools
-
-Claude (Anthropic) was used for code review, refactoring the pipeline into these
-notebooks, and diagnosing the merge failure modes documented in `02_merge`. All analytical
-decisions, prose, and interpretation are the author's own. A full account appears in the
-Agentic Analysis section of the paper.
-
 ## References
 
 Borjas, G. (2026). Wage effects of high-skilled immigration.
