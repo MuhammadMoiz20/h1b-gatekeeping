@@ -1,11 +1,11 @@
 sample,spec,metric,score
 All employer-years,Main (WLS),Petition-weighted R2,0.295731622386743
 All employer-years,Main (LightGBM),Petition-weighted R2,0.4187340543263923
-All employer-years,Main (logistic),ROC AUC,0.7884440886784212
+All employer-years,Main (logistic),ROC AUC,0.7884318168176812
 All employer-years,Main (LightGBM classifier),ROC AUC,0.7973145974519864
 All employer-years,Lagged-only (WLS),Petition-weighted R2,0.28917776770144865
 All employer-years,Lagged-only (LightGBM),Petition-weighted R2,0.3643154327242769
-All employer-years,Lagged-only (logistic),ROC AUC,0.7486603637358837
+All employer-years,Lagged-only (logistic),ROC AUC,0.7486645688737953
 All employer-years,Lagged-only (LightGBM classifier),ROC AUC,0.7600271051738018
 All employer-years,"Fractional logit, main features",Petition-weighted R2,0.34084487296152477
 Matched employer-years,WLS with wage features,Petition-weighted R2,0.38207361973637755

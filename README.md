@@ -11,10 +11,12 @@ industry, size, geography, wages, occupation, and fiscal year predict a sponsor'
 denial rate, both for sponsors not seen in training and for a fiscal year not seen in
 training?
 
-The answer depends on the validation target. On a held-out set containing entirely unseen
-employers but familiar fiscal years, LightGBM reaches petition-weighted $R^2=0.419$ for
-the denial rate and AUC $=0.797$ for any denial. Wage and occupation features improve
-those scores to $R^2=0.528$ and AUC $=0.854$ on the exact-match DOL subsample. Forward
+The answer depends on the validation target. On held-out sets containing entirely unseen
+employers but familiar fiscal years, LightGBM reaches petition-weighted $R^2=0.414$ for
+the denial rate and AUC $=0.798$ for any denial, averaged over ten sponsor-disjoint splits
+(seeds 45 to 54, `output/tables/model_metrics_seeds.csv`). Wage and occupation features
+improve those means to $R^2=0.513$ and AUC $=0.855$ on the exact-match DOL subsample.
+The single seed 45 split reported in the tables below gives 0.419, 0.797, 0.528, and 0.854. Forward
 transfer is poor: models trained through FY2021 and tested on FY2022 have negative
 petition-weighted $R^2$ because the aggregate denial rate fell from 15.0% in the training
 period to 2.2% in FY2022.
@@ -79,7 +81,8 @@ asserts that aggregation preserves all four published USCIS count totals exactly
 The USCIS unit is one canonical employer in one fiscal year. Counts are summed across
 worksites; the state and industry attached to the largest worksite cell supply descriptive
 labels. Missing employer names receive unique placeholders rather than being dropped.
-This design preserves 757,806 initial approvals, 107,839 initial denials, 1,884,861
+On the DOL side, 61 certified LCA rows with a blank employer name cannot form a key and
+are dropped before the employer-year aggregation. This design preserves 757,806 initial approvals, 107,839 initial denials, 1,884,861
 continuing approvals, and 122,194 continuing denials exactly.
 
 The DOL pipeline retains certified H-1B LCAs, annualizes all wage units, rejects implausible
@@ -191,9 +194,19 @@ cd code
 ../.venv/bin/jupyter nbconvert --to notebook --execute --inplace 04_models.ipynb
 ```
 
-The raw DOL workbooks total roughly 1.8 GB and are excluded from Git. Download the 15
-files from the [DOL OFLC performance data page](https://www.dol.gov/agencies/eta/foreign-labor/performance)
-and place them in `data/lca/` with the filenames inventoried in `00_pull.ipynb`.
+The raw DOL workbooks total roughly 1.8 GB and are excluded from Git. The USCIS files and
+the DOL workbooks used here were downloaded on 2026-08-28 from the
+[DOL OFLC performance data page](https://www.dol.gov/agencies/eta/foreign-labor/performance)
+and the USCIS Employer Data Hub. Place the 15 DOL workbooks in `data/lca/` under these names
+(the inventory in `00_pull.ipynb` checks them):
+
+```text
+LCA_FY2017.xlsx  LCA_FY2018.xlsx  LCA_FY2019.xlsx
+LCA_FY2020_Q1.xlsx  LCA_FY2020_Q2.xlsx  LCA_FY2020_Q3.xlsx  LCA_FY2020_Q4.xlsx
+LCA_FY2021_Q1.xlsx  LCA_FY2021_Q2.xlsx  LCA_FY2021_Q3.xlsx  LCA_FY2021_Q4.xlsx
+LCA_FY2022_Q1.xlsx  LCA_FY2022_Q2.xlsx  LCA_FY2022_Q3.xlsx  LCA_FY2022_Q4.xlsx
+```
+
 Notebook 01 reconstructs the ignored slim extracts. The derived panels committed here
 allow notebooks 03 and 04 to run without the raw workbooks.
 
