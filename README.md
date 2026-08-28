@@ -7,9 +7,11 @@ Among initial H-1B petitions filed from FY2017 onward, how well do employer spon
 history, industry, firm size, geography, offered wage relative to the prevailing wage, and
 policy year predict a USCIS denial?
 
-**Headline finding.** Within a policy regime, denial is modestly predictable (AUC ≈ 0.80).
-Across one, it is not: a model trained on FY2017–FY2021 and tested on FY2022 posts a
-*negative* R². The binding variable is administrative guidance, not the employer.
+**Headline finding.** When training and test rows contain the same observed years, denial
+is modestly predictable (AUC ≈ 0.80). Forward prediction is much weaker: a model trained
+on FY2017–FY2021 and tested on FY2022 posts a *negative* R² because the observed denial
+rate fell far below the training period. Employer features alone do not recover that
+temporal decline.
 
 ---
 
