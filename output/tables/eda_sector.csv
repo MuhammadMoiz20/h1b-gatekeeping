@@ -1,22 +1,22 @@
 sector,n,initial,denials,rate
-Educational services,12129,82761,2300,2.779
-Health care/social assistance,16044,41605,1687,4.055
-Manufacturing,20073,75404,3457,4.585
-Retail trade,4351,37532,1753,4.671
-Mining,637,1529,80,5.232
-Information,9879,51941,2792,5.375
-Utilities,847,1583,88,5.559
-Management of companies,477,3119,182,5.835
-Finance/insurance,10663,42800,2554,5.967
-Construction,3724,5989,498,8.315
-Public administration,963,1453,151,10.392
-Transportation,1615,3548,417,11.753
-Wholesale trade,4880,8014,1184,14.774
-Other services,2186,3186,471,14.783
-Unknown,5345,7076,1142,16.139
-Real estate,1925,3157,517,16.376
-Administrative/support,2717,10138,1671,16.483
-Arts/entertainment,923,1277,221,17.306
-Professional/scientific/technical,83242,481101,86075,17.891
-Agriculture,371,597,119,19.933
-Accommodation/food,1310,1826,479,26.232
+Educational services,11540,82843,2287,2.761
+Health care/social assistance,15593,41585,1681,4.042
+Retail trade,4130,38620,1760,4.557
+Manufacturing,19152,75487,3448,4.568
+Mining,631,1540,81,5.26
+Information,9308,51257,2821,5.504
+Utilities,808,1624,91,5.603
+Management of companies,421,3127,177,5.66
+Finance/insurance,10236,42823,2565,5.99
+Construction,3607,6002,498,8.297
+Public administration,891,1381,146,10.572
+Transportation,1536,3539,412,11.642
+Wholesale trade,4691,8127,1182,14.544
+Other services,2119,3176,462,14.547
+Administrative/support,2574,10081,1582,15.693
+Real estate,1873,3164,524,16.561
+Unknown,4844,6570,1115,16.971
+Arts/entertainment,896,1237,220,17.785
+Professional/scientific/technical,79930,481007,86171,17.915
+Agriculture,345,587,120,20.443
+Accommodation/food,1279,1868,496,26.552

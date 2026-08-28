@@ -52,6 +52,11 @@ def canon(name):
         return ""
     s = _PUNCT.sub(" ", name.upper())
     s = _WS.sub(" ", s).strip()
+    # Punctuation removal turns "U.S." into two tokens while an unpunctuated
+    # "US" remains one. Recombine these forms before suffix removal so the
+    # agencies produce the same key.
+    s = re.sub(r"\bU S A\b", "USA", s)
+    s = re.sub(r"\bU S\b", "US", s)
     tokens = [ABBREV.get(t, t) for t in s.split()]
     tokens = [t for t in tokens if t not in SUFFIXES]
     return " ".join(tokens)

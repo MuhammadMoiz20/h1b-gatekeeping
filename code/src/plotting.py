@@ -16,7 +16,7 @@ SURFACE = "#fcfcfb"
 
 mpl.rcParams.update({
     "figure.facecolor": SURFACE, "axes.facecolor": SURFACE,
-    "savefig.facecolor": SURFACE, "figure.dpi": 130, "savefig.dpi": 130,
+    "savefig.facecolor": SURFACE, "figure.dpi": 130, "savefig.dpi": 300,
     "font.size": 10, "text.color": INK,
     "axes.labelcolor": INK2, "axes.edgecolor": MUTED, "axes.linewidth": 0.8,
     "axes.spines.top": False, "axes.spines.right": False,
@@ -42,8 +42,9 @@ def finish(ax, title, sub=None, xlab=None, ylab=None, grid="y"):
 
 
 def save(name):
-    """Write the current figure to output/figures and render it inline."""
+    """Write publication-ready raster and vector copies, then render inline."""
     plt.tight_layout()
     plt.savefig(FIGURES / f"{name}.png", bbox_inches="tight")
+    plt.savefig(FIGURES / f"{name}.pdf", bbox_inches="tight")
     plt.show()
     plt.close()

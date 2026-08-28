@@ -1,5 +1,5 @@
-Model,Features,R2,AUC
-OLS,Baseline (no wages),0.115,0.8236
-OLS,With wage features,0.1426,0.8393
-LightGBM,Baseline (no wages),0.1596,0.8329
-LightGBM,With wage features,0.2046,0.8498
+Model,Features,Petition-weighted R2,AUC
+WLS / Logistic,Baseline (no wages),0.353,0.826
+WLS / Logistic,With wage features,0.3821,0.8421
+LightGBM,Baseline (no wages),0.4771,0.8356
+LightGBM,With wage features,0.5283,0.8537

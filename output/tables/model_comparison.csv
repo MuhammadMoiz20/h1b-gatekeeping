@@ -1,5 +1,5 @@
 Model,Target,Metric,Held-out score
-OLS (linear),Initial denial rate,R2,0.1047
-LightGBM (gradient boosting),Initial denial rate,R2,0.1471
-Logistic (linear),Any initial denial (0/1),ROC AUC,0.7899
-LightGBM classifier,Any initial denial (0/1),ROC AUC,0.8023
+WLS (linear),Initial denial rate,Petition-weighted R2,0.2957
+LightGBM (gradient boosting),Initial denial rate,Petition-weighted R2,0.4187
+Logistic (linear),Any initial denial (0/1),ROC AUC,0.7884
+LightGBM classifier,Any initial denial (0/1),ROC AUC,0.7973
