@@ -17,10 +17,10 @@ SURFACE = "#fcfcfb"
 mpl.rcParams.update({
     "figure.facecolor": SURFACE, "axes.facecolor": SURFACE,
     "savefig.facecolor": SURFACE, "figure.dpi": 130, "savefig.dpi": 300,
-    "font.size": 10, "text.color": INK,
+    "font.size": 13, "text.color": INK,
     "axes.labelcolor": INK2, "axes.edgecolor": MUTED, "axes.linewidth": 0.8,
     "axes.spines.top": False, "axes.spines.right": False,
-    "axes.titlesize": 11.5, "axes.titleweight": "600", "axes.titlelocation": "left",
+    "axes.titlesize": 14, "axes.titleweight": "600", "axes.titlelocation": "left",
     "axes.titlepad": 10,
     "xtick.color": INK2, "ytick.color": INK2,
     "xtick.direction": "out", "ytick.direction": "out",
@@ -33,7 +33,7 @@ def finish(ax, title, sub=None, xlab=None, ylab=None, grid="y"):
     """Apply title, optional subtitle, axis labels and grid to an axes."""
     ax.set_title(title, color=INK, pad=26 if sub else 10)
     if sub:
-        ax.text(0, 1.02, sub, transform=ax.transAxes, fontsize=9, color=INK2,
+        ax.text(0, 1.02, sub, transform=ax.transAxes, fontsize=11, color=INK2,
                 va="bottom")
     ax.set_xlabel(xlab or "")
     ax.set_ylabel(ylab or "")

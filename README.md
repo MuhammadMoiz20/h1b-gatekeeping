@@ -6,8 +6,10 @@ Dartmouth College, Summer 2026 · Muhammad Moiz
 
 ## Research question and headline result
 
-Among initial H-1B petitions, how well do sponsor history, industry, size, geography,
-wages, occupation, and fiscal year predict USCIS denial outcomes?
+Among initial H-1B petitions filed from FY2017 to FY2022, how well do sponsor history,
+industry, size, geography, wages, occupation, and fiscal year predict a sponsor's initial
+denial rate, both for sponsors not seen in training and for a fiscal year not seen in
+training?
 
 The answer depends on the validation target. On a held-out set containing entirely unseen
 employers but familiar fiscal years, LightGBM reaches petition-weighted $R^2=0.419$ for
@@ -48,7 +50,7 @@ Run the notebooks in numeric order. Each documents its inputs, function, and out
 | 01 | `01_extract_lca.ipynb` | 15 DOL disclosure workbooks in `data/lca/` | Stream three historical workbook layouts and retain the required columns | `data/lca_slim/lca_*.csv` |
 | 02 | `02_merge.ipynb` | USCIS annual CSVs; slim LCA CSVs | Build canonical employer-years, backward-looking history, cleaned wage measures, and the exact employer-year agency join | `data/analysis_panel.csv`, `data/lca_employer_year.csv`, `data/analysis_panel_wages.csv`; merge diagnostic tables |
 | 03 | `03_eda.ipynb` | `data/analysis_panel_wages.csv` | Describe outcomes, sponsors, sectors, match selection, and wage patterns | figures 01–05 and 10–12; `output/tables/eda_*.csv` |
-| 04 | `04_models.ipynb` | `data/analysis_panel_wages.csv` | Fit WLS, logistic regression, and LightGBM with sponsor-disjoint validation; run temporal validation and SHAP | figures 06–09 and 13–14; model, coefficient, split, and importance tables |
+| 04 | `04_models.ipynb` | `data/analysis_panel_wages.csv` | Fit WLS, logistic regression, and LightGBM with sponsor-disjoint validation; run temporal validation and SHAP | figures 06–09 and 13–14; model, seed-repetition, robustness, coefficient, split, and importance tables |
 
 ### Merge diagnostics
 
@@ -112,6 +114,9 @@ an unseen year cannot be extrapolated.
 
 ## Executed results
 
+The website reflects the earlier row-level build of this project. The numbers in the paper
+and in this README come from the current employer-level pipeline and supersede it.
+
 All model-window employer-years, unseen-employer test set:
 
 | Model | Target | Metric | Held-out score |
@@ -136,6 +141,37 @@ Forward validation, train through FY2021 and test FY2022:
 |---|---:|
 | WLS | −1.7203 |
 | LightGBM | −1.2398 |
+
+Repeating the employer split over ten seeds (45 to 54) gives the following means and standard
+deviations (`output/tables/model_metrics_seeds.csv`):
+
+| Sample | WLS $R^2$ | LightGBM $R^2$ | Logistic AUC | LightGBM AUC |
+|---|---:|---:|---:|---:|
+| All employer-years | 0.3031 (0.0231) | 0.4140 (0.0223) | 0.7895 (0.0022) | 0.7984 (0.0019) |
+| Matched, baseline | 0.3346 (0.0304) | 0.4583 (0.0280) | 0.8281 (0.0025) | 0.8369 (0.0021) |
+| Matched, with wages | 0.3635 (0.0280) | 0.5127 (0.0238) | 0.8443 (0.0027) | 0.8549 (0.0020) |
+
+The levels move by about 0.02 to 0.03 across splits, but the within-seed gaps are much
+tighter. LightGBM beats WLS on $R^2$ by 0.1109 on average (SD 0.0072, range 0.0986 to
+0.1230) and beats logistic regression on AUC by 0.0088 (SD 0.0008). Adding wage features
+raises LightGBM $R^2$ by 0.0544 (SD 0.0091) and AUC by 0.0180 (SD 0.0006). Every paired
+gap is positive in all ten seeds.
+
+Robustness checks on the seed 45 split (`output/tables/robustness.csv`):
+
+| Specification | Sample | Metric | Score |
+|---|---|---|---:|
+| Lagged-only features, WLS | all | petition-weighted $R^2$ | 0.2892 |
+| Lagged-only features, LightGBM | all | petition-weighted $R^2$ | 0.3643 |
+| Lagged-only features, logistic | all | ROC AUC | 0.7487 |
+| Lagged-only features, LightGBM classifier | all | ROC AUC | 0.7600 |
+| Fractional logit, main features | all | petition-weighted $R^2$ | 0.3408 |
+| Fractional logit, with wage features | matched | petition-weighted $R^2$ | 0.4843 |
+
+The lagged-only set uses only the sponsor's own prior-year record (previous initial count,
+previous continuing share, previous denial rate, prior active years, repeat flag). The
+fractional logit is a binomial GLM on the rate with petition weights and employer-clustered
+standard errors; it fixes the 10.9% of WLS test predictions that fall outside 0 and 1.
 
 These estimands are intentionally separate. The sponsor-disjoint test asks whether the
 model ranks new employers within familiar years; the temporal test asks whether pre-2022
@@ -164,5 +200,5 @@ allow notebooks 03 and 04 to run without the raw workbooks.
 ## Principal references
 
 Borjas (2026); Bourveau et al. (2025); Costa and Hira (2020); Glennon (2024);
-Ke and Qiao (2021); Lipsky (1980); Mayda et al. (2020); Peri, Shih, and Sparber (2015);
+Ke and Qiao (2019); Lipsky (1980); Mayda et al. (2020); Peri, Shih, and Sparber (2015);
 Piore (1979); Spence (1973). Full citations appear in the paper.
