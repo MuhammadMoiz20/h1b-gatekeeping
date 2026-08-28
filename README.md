@@ -15,7 +15,7 @@ The answer depends on the validation target. On held-out sets containing entirel
 employers but familiar fiscal years, LightGBM reaches petition-weighted $R^2=0.414$ for
 the denial rate and AUC $=0.798$ for any denial, averaged over ten sponsor-disjoint splits
 (seeds 45 to 54, `output/tables/model_metrics_seeds.csv`). Wage and occupation features
-improve those means to $R^2=0.513$ and AUC $=0.855$ on the exact-match DOL subsample.
+improve those means to $R^2=0.512$ and AUC $=0.855$ on the exact-match DOL subsample.
 The single seed 45 split reported in the tables below gives 0.419, 0.797, 0.528, and 0.854. Forward
 transfer is poor: models trained through FY2021 and tested on FY2022 have negative
 petition-weighted $R^2$ because the aggregate denial rate fell from 15.0% in the training
@@ -117,8 +117,8 @@ an unseen year cannot be extrapolated.
 
 ## Executed results
 
-The website reflects the earlier row-level build of this project. The numbers in the paper
-and in this README come from the current employer-level pipeline and supersede it.
+The paper, repository outputs, and project website report the same canonical
+employer-year pipeline and validation design.
 
 All model-window employer-years, unseen-employer test set:
 
@@ -152,12 +152,12 @@ deviations (`output/tables/model_metrics_seeds.csv`):
 |---|---:|---:|---:|---:|
 | All employer-years | 0.3031 (0.0231) | 0.4140 (0.0223) | 0.7895 (0.0022) | 0.7984 (0.0019) |
 | Matched, baseline | 0.3346 (0.0304) | 0.4583 (0.0280) | 0.8281 (0.0025) | 0.8369 (0.0021) |
-| Matched, with wages | 0.3635 (0.0280) | 0.5127 (0.0238) | 0.8443 (0.0027) | 0.8549 (0.0020) |
+| Matched, with wages | 0.3635 (0.0280) | 0.5122 (0.0249) | 0.8443 (0.0027) | 0.8548 (0.0020) |
 
 The levels move by about 0.02 to 0.03 across splits, but the within-seed gaps are much
 tighter. LightGBM beats WLS on $R^2$ by 0.1109 on average (SD 0.0072, range 0.0986 to
 0.1230) and beats logistic regression on AUC by 0.0088 (SD 0.0008). Adding wage features
-raises LightGBM $R^2$ by 0.0544 (SD 0.0091) and AUC by 0.0180 (SD 0.0006). Every paired
+raises LightGBM $R^2$ by 0.0539 (SD 0.0091) and AUC by 0.0179 (SD 0.0007). Every paired
 gap is positive in all ten seeds.
 
 Robustness checks on the seed 45 split (`output/tables/robustness.csv`):
@@ -198,7 +198,8 @@ The raw DOL workbooks total roughly 1.8 GB and are excluded from Git. The USCIS 
 the DOL workbooks used here were downloaded on 2026-08-28 from the
 [DOL OFLC performance data page](https://www.dol.gov/agencies/eta/foreign-labor/performance)
 and the USCIS Employer Data Hub. Place the 15 DOL workbooks in `data/lca/` under these names
-(the inventory in `00_pull.ipynb` checks them):
+(the inventory in `00_pull.ipynb` checks them). `data/lca_manifest.csv` records the exact
+byte size and SHA-256 checksum of every workbook used in the submitted analysis:
 
 ```text
 LCA_FY2017.xlsx  LCA_FY2018.xlsx  LCA_FY2019.xlsx
