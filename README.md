@@ -20,7 +20,7 @@ employers but familiar fiscal years, LightGBM reaches petition-weighted $R^2=0.4
 the denial rate and AUC $=0.798$ for any denial, averaged over ten sponsor-disjoint splits
 (seeds 45 to 54, `output/tables/model_metrics_seeds.csv`). Wage and occupation features
 improve those means to $R^2=0.512$ and AUC $=0.855$ on the exact-match DOL subsample.
-The single seed 45 split reported in the tables below gives 0.419, 0.797, 0.528, and 0.854. Forward
+The single seed 45 split reported in the tables below gives 0.419, 0.797, 0.531, and 0.854. Forward
 transfer is poor: models trained through FY2021 and tested on FY2022 have negative
 petition-weighted $R^2$ because the aggregate denial rate fell from 15.0% in the training
 period to 2.2% in FY2022.
@@ -79,7 +79,7 @@ asserts that aggregation preserves all four published USCIS count totals exactly
 | Source or derived file | Coverage | Rows | Distributed here? |
 |---|---:|---:|---|
 | USCIS H-1B Employer Data Hub | FY2017–FY2023 | 374,253 raw worksite rows | yes |
-| DOL certified H-1B LCA records | FY2017–FY2022 | 3,750,059 applications | raw workbooks: no |
+| DOL certified H-1B LCA records | FY2017–FY2022 | 3,472,055 applications | raw workbooks: no |
 | `analysis_panel.csv` | FY2017–FY2023 | 176,404 canonical employer-years | yes |
 | `lca_employer_year.csv` | FY2017–FY2022 | 329,829 canonical employer-years | yes |
 | `analysis_panel_wages.csv` | FY2017–FY2023 | 176,404 × 38 | yes |
@@ -87,12 +87,16 @@ asserts that aggregation preserves all four published USCIS count totals exactly
 The USCIS unit is one canonical employer in one fiscal year. Counts are summed across
 worksites; the state and industry attached to the largest worksite cell supply descriptive
 labels. Missing employer names receive unique placeholders rather than being dropped.
-On the DOL side, 61 certified LCA rows with a blank employer name cannot form a key and
-are dropped before the employer-year aggregation. The FY2021 Q2 and Q3 DOL workbooks are
-cumulative year-to-date files (each repeats the earlier quarters of FY2021), so the FY2021
-stack contains roughly 278,000 repeated certified rows. Repetition leaves employer-year
-medians and shares unchanged but inflates FY2021 filing and position counts; the rows are
-not deduplicated, and the paper reports this as a limitation. The USCIS aggregation itself preserves
+On the DOL side, the FY2021 Q2 and Q3 workbooks are cumulative year-to-date files (Q2
+repeats Q1, and Q3 repeats Q1 and Q2), so `02_merge.ipynb` reads FY2021 from the Q3 extract
+(decisions 2020-10-01 to 2021-06-30) plus the Q4 extract (2021-07-01 to 2021-09-30) only,
+and asserts that the two files do not overlap by decision date. The superseded Q1 and Q2
+extracts are skipped rather than deduplicated because the slim extracts carry no case
+identifier and identical filings are legitimate. The FY2020 Q1 and all FY2021 workbooks
+store NAICS and SOC codes as Excel text formulas (`="15-1132.00"`); the wrapper is stripped
+before the two-digit SOC group is read, so a modal occupation is defined for every DOL
+employer-year except three. Sixty certified LCA rows with a blank employer name cannot form
+a key and are dropped before the employer-year aggregation. The USCIS aggregation itself preserves
 757,806 initial approvals, 107,839 initial denials, 1,884,861 continuing approvals, and
 122,194 continuing denials exactly. The committed analysis panel then retains the 176,404
 employer-years with at least one initial petition. It therefore preserves both initial
@@ -148,9 +152,9 @@ Exact-match DOL subsample, identical employers and partitions:
 | Model family | Features | Petition-weighted $R^2$ | AUC |
 |---|---|---:|---:|
 | WLS / logistic | baseline | 0.3530 | 0.8260 |
-| WLS / logistic | + wage and occupation | 0.3821 | 0.8421 |
+| WLS / logistic | + wage and occupation | 0.3812 | 0.8428 |
 | LightGBM | baseline | 0.4771 | 0.8356 |
-| LightGBM | + wage and occupation | **0.5283** | **0.8537** |
+| LightGBM | + wage and occupation | **0.5310** | **0.8542** |
 
 Forward validation, train through FY2021 and test FY2022:
 
@@ -166,12 +170,12 @@ deviations (`output/tables/model_metrics_seeds.csv`):
 |---|---:|---:|---:|---:|
 | All employer-years | 0.3031 (0.0231) | 0.4140 (0.0223) | 0.7895 (0.0022) | 0.7984 (0.0019) |
 | Matched, baseline | 0.3346 (0.0304) | 0.4583 (0.0280) | 0.8281 (0.0025) | 0.8369 (0.0021) |
-| Matched, with wages | 0.3635 (0.0280) | 0.5122 (0.0249) | 0.8443 (0.0027) | 0.8548 (0.0020) |
+| Matched, with wages | 0.3624 (0.0280) | 0.5120 (0.0249) | 0.8449 (0.0027) | 0.8552 (0.0020) |
 
 The levels move by about 0.02 to 0.03 across splits, but the within-seed gaps are much
 tighter. LightGBM beats WLS on $R^2$ by 0.1109 on average (SD 0.0072, range 0.0986 to
 0.1230) and beats logistic regression on AUC by 0.0088 (SD 0.0008). Adding wage features
-raises LightGBM $R^2$ by 0.0539 (SD 0.0091) and AUC by 0.0179 (SD 0.0007). Every paired
+raises LightGBM $R^2$ by 0.0537 (SD 0.0091) and AUC by 0.0183 (SD 0.0008). Every paired
 gap is positive in all ten seeds.
 
 Robustness checks on the seed 45 split (`output/tables/robustness.csv`):
@@ -183,7 +187,7 @@ Robustness checks on the seed 45 split (`output/tables/robustness.csv`):
 | Lagged-only features, logistic | all | ROC AUC | 0.7487 |
 | Lagged-only features, LightGBM classifier | all | ROC AUC | 0.7600 |
 | Fractional logit, main features | all | petition-weighted $R^2$ | 0.3408 |
-| Fractional logit, with wage features | matched | petition-weighted $R^2$ | 0.4843 |
+| Fractional logit, with wage features | matched | petition-weighted $R^2$ | 0.4839 |
 
 The lagged-only set uses only the sponsor's own prior-year record (previous initial count,
 previous continuing share, previous denial rate, prior active years, repeat flag). The

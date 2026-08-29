@@ -8,5 +8,5 @@ All employer-years,Lagged-only (LightGBM),Petition-weighted R2,0.364315432724276
 All employer-years,Lagged-only (logistic),ROC AUC,0.7486645688737953
 All employer-years,Lagged-only (LightGBM classifier),ROC AUC,0.7600271051738018
 All employer-years,"Fractional logit, main features",Petition-weighted R2,0.34084487296152477
-Matched employer-years,WLS with wage features,Petition-weighted R2,0.38207361973637755
-Matched employer-years,Fractional logit with wage features,Petition-weighted R2,0.4843400781785665
+Matched employer-years,WLS with wage features,Petition-weighted R2,0.3811525655990229
+Matched employer-years,Fractional logit with wage features,Petition-weighted R2,0.4838814915176972

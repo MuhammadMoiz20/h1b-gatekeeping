@@ -1,17 +1,17 @@
 ,0
-Fiscal year,0.059939500147608855
-Modal SOC group,0.02439790170293135
-Industry sector,0.019549587970168952
-Prior-year denial rate,0.017051593848139073
-Share at H-1B dependent employer,0.013040100722902856
-log(1 + initial petitions),0.009853277350075065
-log(1 + LCA filings),0.008935128305214557
-Share filed via agent or attorney,0.008849744661146249
-log(median offered wage),0.008286609139073803
-Continuing (renewal) share,0.008215520784904538
-Offered / prevailing wage,0.006141561132394171
-State,0.006063367558741347
-Position share at PW level I or II,0.005414845499782446
-log(1 + prior-yr initial petitions),0.0020092748091814416
-Prior active sponsor-years,0.0017601687368290224
-Sponsored in prior year,0.00012306190314737342
+Fiscal year,0.0600756254455644
+Modal SOC group,0.0253866723856659
+Industry sector,0.019437518822763785
+Prior-year denial rate,0.016815453592272555
+Share at H-1B dependent employer,0.012875805243070115
+log(1 + initial petitions),0.011195918678537134
+log(1 + LCA filings),0.009873259907416694
+Share filed via agent or attorney,0.008987566586878382
+log(median offered wage),0.008298467555574708
+Continuing (renewal) share,0.00784682452027837
+Offered / prevailing wage,0.006154115604746441
+State,0.006085582293918648
+Position share at PW level I or II,0.004647824164537322
+log(1 + prior-yr initial petitions),0.0022105868709929224
+Prior active sponsor-years,0.0019530032860894501
+Sponsored in prior year,0.0002384198928773672
