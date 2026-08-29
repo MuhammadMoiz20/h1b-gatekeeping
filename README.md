@@ -6,6 +6,8 @@ Dartmouth College, Summer 2026 · Muhammad Moiz
 
 **Project website:** https://qss45-h1b.vercel.app
 
+**Final paper:** [PDF](paper/H1B_Final_Paper.pdf) · [LaTeX source](paper/H1B_Final_Paper.tex)
+
 ## Research question and headline result
 
 Among initial H-1B petitions filed from FY2017 to FY2022, how well do sponsor history,
@@ -37,6 +39,7 @@ data/                         USCIS inputs and reproducible derived panels
 output/
   figures/                    figures in 300-dpi PNG and vector PDF
   tables/                     diagnostics, estimates, metrics, and importance
+paper/                        final paper PDF and LaTeX source
 requirements.txt
 ```
 

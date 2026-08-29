@@ -1,0 +1,288 @@
+\documentclass[9pt,twoside]{pnas-new}
+
+\templatetype{pnasmathematics}
+
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{placeins}
+\hypersetup{pdftitle={Predictability, Wages, and Gatekeeping in the H-1B Program},pdfauthor={Muhammad Moiz}}
+
+\title{Predictability, Wages, and Gatekeeping in the H-1B Program}
+
+\author[a,1]{Muhammad Moiz}
+\affil[a]{Dartmouth College, Hanover, NH 03755}
+\leadauthor{Moiz}
+
+\significancestatement{H-1B adjudication is often discussed as if outcomes follow stable rules. Employer and job features predict which sponsors face greater risk within familiar years, including among sponsors never seen during training. Those patterns do not transfer to fiscal year 2022, when the denial rate fell far below the training period. Wage and occupation data improve within-period prediction, but the estimated relationship between the offered-to-prevailing ratio and denial is sensitive to model specification. Administrative context appears to shape adjudication risk more than any fixed sponsor profile.}
+
+\authorcontributions{M.M. designed the study, assembled and cleaned the data, conducted the analysis, interpreted the results, and wrote the paper.}
+\authordeclaration{The author declares no competing interest.}
+\correspondingauthor{\textsuperscript{1}To whom correspondence should be addressed. E-mail: moizzahid20@gmail.com}
+\keywords{H-1B $|$ immigration $|$ administrative discretion $|$ machine learning $|$ wages}
+
+\begin{abstract}
+The H-1B program links skilled migration to employer sponsorship and federal adjudication. I ask how well sponsor history, industry, size, geography, wages, occupation, and fiscal year predict a sponsor's initial denial rate. I combine USCIS records for 2017 to 2023 with 3.75 million certified Department of Labor applications for 2017 to 2022, producing 176,404 canonical employer-years. On unseen sponsors, LightGBM reaches mean petition-weighted $R^2=0.414$ against 0.303 for weighted least squares, and AUC $=0.798$ against 0.790 for any denial. On the exact-match wage sample, wage and occupation features raise LightGBM $R^2$ from 0.458 to 0.512 and AUC from 0.837 to 0.855. All gaps are positive over ten employer-disjoint splits. Yet models trained through 2021 have negative $R^2$ in 2022, when the denial rate falls to 2.2\%. Wages cluster near the prevailing-wage floor, but their estimated relationship with denial is not robust across specifications. Sponsor characteristics identify relative risk within familiar periods; administrative change limits forward transfer.
+\end{abstract}
+
+\dates{Compiled August 29, 2026}
+
+\begin{document}
+\maketitle
+\thispagestyle{firststyle}
+\ifthenelse{\boolean{shortarticle}}{\ifthenelse{\boolean{singlecolumn}}{\abscontentformatted}{\abscontent}}{}
+
+\section*{Introduction}
+
+The H-1B visa is a major route through which college-educated noncitizens enter the U.S. labor market. Employers submit wage and job information to the Department of Labor before USCIS adjudicates the petition. Among initial petitions filed from FY2017 to FY2022, how well do sponsor history, industry, size, geography, wages, occupation, and fiscal year predict a sponsor's denial rate for unseen sponsors and an unseen year? The question is personally important to me as an international student whose own petition may one day depend on the answer.
+
+Three theories motivate the hypotheses. Street-level bureaucracy holds that policy is partly produced by officials applying broad rules to cases \cite{lipsky1980}. Executive Order 13788 directed agencies to protect U.S. workers in the H-1B program \cite{eo13788}. USCIS then rescinded deference to prior approvals \cite{uscis2017deference} and required contracts and itineraries for third-party worksites \cite{uscis2018memo}. The worksite memorandum was vacated in \emph{ITServe Alliance v. Cissna} and withdrawn in 2020 \cite{itserve2020,uscis2020rescind}; deference returned in 2021 \cite{uscis2021deference}. \textbf{H1a}: denial varies strongly with fiscal year after adjustment for observed sponsor composition. \textbf{H1b}: a model trained before an administrative shift predicts poorly across it.
+
+Signaling theory suggests that adjudicators screen the filing institution as well as the beneficiary \cite{spence1973}. A signal separates types only when it is costly to send, and retaining counsel or maintaining a continuous filing record costs money and effort that a one-off sponsor is less likely to pay. A prior denial may instead reveal persistent case or business-model characteristics. \textbf{H2}: the initial denial rate is lower for sponsors that filed in the immediately previous year and for sponsors with a higher share of applications filed through an agent or attorney, and higher for sponsors with a higher prior-year denial rate.
+
+Segmented labor market theory points to visa-tied workers' limited mobility and employers' ability to hire near wage floors \cite{piore1979}. Most certified positions in 2019 used the two lowest prevailing-wage levels \cite{costahira2020}. Wage-floor proximity may also mark lower-skill classifications or outsourcing arrangements that attract scrutiny, though aggregate data cannot separate these mechanisms. \textbf{H3}: denial is higher for sponsors whose offers sit closer to the prevailing wage, conditional on occupation, sector, and sponsor history.
+
+\subsection*{Related work}
+
+Economic research asks what access to an H-1B visa does. It can raise firm employment \cite{doran2022,mahajan2025}; city-level STEM growth may benefit native graduates \cite{peri2015}; and visa limits can shift hiring abroad \cite{glennon2024}. Other work documents sponsor concentration and wage gaps \cite{mayda2020,borjas2026,bourveau2025}. This literature does not explain why a sponsor that reaches adjudication is denied.
+
+Adjudication research shows that asylum grant rates vary across judges and offices \cite{ramjinogales2007} and that frontline organizations translate pressure into treatment \cite{brodkin2011}. Representation also predicts favorable immigration-court outcomes \cite{eaglyshafer2015}, motivating counsel as a signal in H2. Descriptive H-1B work documented rising denials after 2017 \cite{nfap2020}, but did not model them. Prediction is useful only if it survives the training period \cite{kleinberg2015}; dataset-shift research explains why random holdouts may not \cite{quinonero2009}. The closest computational precedent predicts DOL certification, not USCIS adjudication \cite{keqiao2021}; nearly all applications in my DOL sample are already certified, so the stages must remain separate.
+
+I found no earlier study that models USCIS employer-level denial across this policy shift, tests unseen sponsors and an unseen year, and links the outcome to DOL wage and occupation data.
+
+\section*{Data}
+
+USCIS Employer Data Hub files give employer name, two-digit NAICS industry, worksite location, and counts of initial and continuing approvals and denials \cite{uscishub}; seven files for fiscal years 2017 to 2023 contain 374,253 worksite rows. The files carry no tax identifier, so the employer key is the name alone, passed through one fixed canonicalization that removes punctuation and corporate suffixes and reconciles common abbreviations. I then summed petition counts to one canonical employer and fiscal year. The state and sector of the largest worksite cell provide labels.\footnote{State groups, sector labels, and the wage medians used for descriptive bands are built from petition or filing volume only, never from outcomes, so no test-set label enters a feature.} Aggregation preserves exactly 757,806 initial approvals, 107,839 initial denials, 1,884,861 continuing approvals, and 122,194 continuing denials.
+
+Employer-years without an initial adjudication have no outcome and are excluded, leaving 176,404 employer-years,\footnote{The already-delivered presentation reflects an earlier row-level build. It remains archived unchanged; the paper, repository, and website use the corrected analysis.} including 165,593 from the complete 2017 to 2022 modeling window. Fiscal year 2023 is partial and descriptive only. The outcome is initial denials divided by initial approvals plus denials; its mean is 0.128 and median zero, with 79.7\% of cells at no denial and 8.9\% at one. This discreteness motivates rate regression and any-denial classification. Only 44.0\% have an exact prior-year record; missing prior values are set to zero and identified by the repeat-sponsor flag.
+
+The second source is the DOL Labor Condition Application disclosure data \cite{doldata}. I combined 15 workbooks holding 3,973,349 rows, kept only the H-1B class, which drops 95,576 H-1B1 and E-3 rows, and kept certified or certified-withdrawn applications. Fiscal year comes from the disclosure-file label. This leaves 3,750,059 certified applications; 61 with a blank employer name are dropped before aggregation to 329,829 DOL employer-years. Pay is annualized, and annualized offered or prevailing wages outside \$15,000 to \$2,000,000 (0.8\% of rows) are set to missing before ratios are formed, while the applications remain in all counts. Each cell records median offered and prevailing wages, their median ratio, filing and position counts, agent or attorney use, H-1B dependency, and the position-weighted modal two-digit SOC occupation and share at prevailing-wage levels I or II. Missing yes/no fields remain missing. A modal occupation is undefined for 11.6\% of DOL employer-years and 246 matched cells lack a usable wage ratio; both linear and tree models receive an explicit unknown category for occupation, and missing numeric wage values are imputed as described in Methods.
+
+The agencies share no employer identifier, so I join on the exact canonical key and fiscal year while retaining every USCIS row. In 2017 to 2022, 119,185 of 165,593 employer-years match, or 72.0\%, covering 87.0\% of initial petitions. Match rates are about 63 to 66\% among one-petition cells and 88.8\% in the largest size decile, so the wage sample overrepresents established sponsors. I compare baseline and wage models on the same matched rows, which makes the models comparable but does not make the sample representative.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.88\linewidth]{figures/01_denial_rate_timeseries.pdf}
+\caption{Initial and continuing H-1B denial rates by fiscal year. Rates use published petition counts. Fiscal year 2023 is partial and excluded from all models.}
+\label{fig:timeseries}
+\end{figure}
+
+\section*{Methods}
+
+Baseline predictors are log initial petitions, continuing-petition share, log prior-year initial petitions, prior-year denial rate, prior-year sponsor status, earlier active sponsor-years, industry, state group, and fiscal year. The wage specification adds the offered-to-prevailing ratio, log median offered wage, position-weighted low-wage-level share, agent or attorney share, H-1B-dependent share, log LCA filings, and modal SOC group. Numeric wage values are imputed with the median of each split's own training rows, and missing SOC receives an explicit category. The wage test in H3 is conditional because wage level, occupation, sponsor type, and filing practice move together.
+
+Because the outcome is a proportion based on unequal numbers of petitions, I use weighted least squares (WLS) with initial petition counts as weights and cluster confidence intervals by canonical employer. The nonlinear comparison is LightGBM gradient boosting \cite{lightgbm2017} with settings fixed before any tuning, namely at most 1,000 trees, learning rate 0.04, 48 leaves, minimum 50 rows per leaf, 80\% row and feature subsampling, and early stopping with a patience of 60 rounds. The tree count is the only value selected on validation data, and the model refits with that count on the combined development set. A parallel any-denial task compares logistic regression with a LightGBM classifier using ROC AUC. The logistic model is unpenalized maximum likelihood on the unscaled one-hot design, and the classifier's early stopping uses unweighted binary log loss, so its tuning does not match the petition-weighted rate objective. SHAP values computed on a random sample of 4,000 sponsor-disjoint test rows from the seed 45 split describe the tree models \cite{lundberg2017}.
+
+The main split assigns canonical employers, rather than rows, to training, validation, and test partitions in a 56/14/30 ratio, with zero employer overlap and similar fiscal-year shares. Test labels are never used for training or tuning. Held-out rate performance is petition-weighted $R^2$. Because one split gives one number, I repeat the procedure over seeds 45 to 54 and report the mean, standard deviation, and within-seed paired difference between models.
+
+Three robustness checks follow. A lagged-only specification drops the contemporaneous descriptors and adds prior-year continuing share. A fractional logit with petition weights and employer-clustered errors respects the unit interval, which 10.9\% of WLS test predictions leave. Finally, an eleven-point LightGBM grid is scored on validation data only. The fractional logit is repeated over ten seeds; the other checks use single fits.
+
+The sponsor-disjoint test measures generalization to new employers in observed periods; temporal validation directly tests H1b. LightGBM trains on 2017 to 2020, uses 2021 to choose the tree count, refits through 2021, and predicts 2022; WLS fits through 2021. A rolling-origin design repeats this for each test year $t$ from 2018 to 2022, using $t-1$ for validation and all earlier years for the refit; for 2018 validation is a 20\% sponsor holdout of 2017. Fiscal year is removed because an unseen-year dummy cannot be extrapolated.
+
+\section*{Results}
+
+\subsection*{Time, industry, and sponsor size}
+
+The strongest descriptive result is the time series in Figure \ref{fig:timeseries}, where the initial denial rate rises from 13.1\% in 2017 to 24.3\% in 2018, remains 21.1\% in 2019, and falls to 2.2\% by 2022, with continuing petitions following the same shape at a lower level.
+
+Pooled initial denial rates range from 2.8\% in educational services to 26.6\% in accommodation and food services. The size pattern is not monotonic. One-petition employer-years are denied 13.1\% of the time, two-petition years 12.1\%, 11 to 25 petitions 16.5\%, and more than 100 petitions 10.5\%.
+
+\subsection*{Wages cluster near the regulatory floor}
+
+The median matched employer-year offers 1.035 times its prevailing wage, and 27.9\% offer at or below it. The position-weighted share at wage levels I or II declines from 79.1\% in 2017 to 60.8\% in 2022 but remains a majority every year (Figure \ref{fig:wages}). Raw denial rates by wage-ratio band are 14.8\% at the prevailing wage, 21.3\% from 1.00 to 1.05, 11.5\% from 1.05 to 1.10, and 3.6\% from 1.20 to 1.40, which is not monotonic.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.96\linewidth]{figures/10_11_wage_panels.pdf}
+\caption{Wage patterns among exact USCIS--DOL employer-year matches. Left, the median offered wage relative to the median prevailing wage; 28\% of employer-years pay at or below the prevailing wage. Right, the position-weighted share at prevailing-wage levels I or II by fiscal year.}
+\label{fig:wages}
+\end{figure*}
+
+\subsection*{Prediction for unseen sponsors}
+
+Table \ref{tab:models} reports sponsor-disjoint test performance for seed 45 and the mean over ten seeds. Its test set holds 49,697 employer-years from 29,137 employers, and 35,741 from 18,646 employers in the matched sample. Across all employer-years, WLS averages petition-weighted $R^2=0.303$ and LightGBM 0.414; logistic regression averages AUC $=0.790$ and the LightGBM classifier 0.798. LightGBM beats WLS by a mean of 0.111 in $R^2$ (SD 0.007) and logistic regression by 0.009 in AUC (SD 0.001), with positive gaps in all ten splits. Wage features also improve all four models on the matched rows in every split.
+
+\begin{table}[t]
+\centering
+\caption{Performance on sponsor-disjoint held-out employer-years}
+\label{tab:models}
+\begin{minipage}{0.98\linewidth}
+\centering
+\begin{tabular}{llcccc}
+\toprule
+ & & \multicolumn{2}{c}{Weighted $R^2$} & \multicolumn{2}{c}{AUC} \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}
+Sample & Model and features & Seed 45 & Mean (SD) & Seed 45 & Mean (SD) \\
+\midrule
+All & WLS or logistic & 0.296 & 0.303 (0.023) & 0.788 & 0.790 (0.002) \\
+All & LightGBM & 0.419 & 0.414 (0.022) & 0.797 & 0.798 (0.002) \\
+Matched & WLS/logistic, baseline & 0.353 & 0.335 (0.030) & 0.826 & 0.828 (0.002) \\
+Matched & WLS/logistic, + wages & 0.382 & 0.363 (0.028) & 0.842 & 0.844 (0.003) \\
+Matched & LightGBM, baseline & 0.477 & 0.458 (0.028) & 0.836 & 0.837 (0.002) \\
+Matched & LightGBM, + wages & \textbf{0.528} & \textbf{0.512 (0.025)} & \textbf{0.854} & \textbf{0.855 (0.002)} \\
+\addlinespace
+All & Fractional logit & 0.341 & 0.356 (0.024) & & \\
+Matched & Fractional logit, + wages & 0.484 & 0.463 (0.032) & & \\
+\bottomrule
+\end{tabular}
+\par\smallskip
+{\scriptsize Values rounded to three decimals. $R^2$ uses initial-petition weights; AUC is unweighted. Mean and SD are over ten employer-disjoint splits with seeds 45 to 54. Wage comparisons hold rows and partitions fixed within each seed. With seed 45 the test partitions hold 49,697 employer-years (29,137 employers) in the full sample and 35,741 (18,646) in the matched sample. Per-seed rows are in \texttt{output/tables/model\_metrics\_seeds\_runs.csv}.\par}
+\end{minipage}
+\end{table}
+
+Table \ref{tab:coef} reports the baseline WLS estimates, which partly support H2. A one-unit increase in prior-year denial rate is associated with a 0.348 higher current rate ($p<0.001$). Sponsoring in the immediately previous year is associated with a 0.028 lower rate ($p<0.001$), and continuing-petition share with a 0.112 lower rate ($p<0.001$). Earlier active years ($p=0.188$) and log prior-year volume are not significant.
+
+The fiscal-year coefficients line up with the policy record. Relative to 2017, the 2018 dummy adds 0.082 to the expected denial rate, 2019 adds 0.022, and 2020 subtracts 0.060, with composition, history, sector, and state held fixed. The 2021 and 2022 coefficients are $-0.127$ and $-0.122$, the largest year effects in the table, although several sector dummies omitted from Table \ref{tab:coef} are larger in magnitude. The break between 2019 and 2020 coincides with \emph{ITServe} and the memorandum's withdrawal, and the 2021 decline with the restoration of deference. This is what H1a requires, although a year dummy cannot separate guidance from case mix or applicant selection.
+
+Figure \ref{fig:shap}A shows the same ordering in the tree model. Mean absolute SHAP values on the test sample are 0.061 for fiscal year, 0.034 for industry sector, 0.025 for continuing-petition share, and 0.018 for prior-year denial rate. State contributes 0.013, and the size and history counts less than 0.007 each, so the tree model uses the same year, sector, and history information as WLS with interactions among them.
+
+\begin{table}[t]
+\centering
+\caption{Baseline WLS estimates for the initial denial rate, seed-45 development partition}
+\label{tab:coef}
+\begin{minipage}{0.86\linewidth}
+\centering
+\begin{tabular}{lrrr}
+\toprule
+Predictor & Coef. & 95\% CI & $p$ \\
+\midrule
+Prior-year denial rate & 0.348 & [0.313, 0.383] & $<$0.001 \\
+Sponsored in prior year & $-$0.028 & [$-$0.044, $-$0.013] & $<$0.001 \\
+Continuing-petition share & $-$0.112 & [$-$0.133, $-$0.090] & $<$0.001 \\
+log(1 + initial petitions) & $-$0.006 & [$-$0.009, $-$0.002] & 0.002 \\
+log(1 + prior-year initial) & 0.005 & [$-$0.002, 0.011] & 0.162 \\
+Prior active sponsor-years & 0.005 & [$-$0.002, 0.012] & 0.188 \\
+\addlinespace
+FY2018 & 0.082 & [0.068, 0.096] & $<$0.001 \\
+FY2019 & 0.022 & [0.005, 0.039] & 0.011 \\
+FY2020 & $-$0.060 & [$-$0.084, $-$0.036] & $<$0.001 \\
+FY2021 & $-$0.127 & [$-$0.140, $-$0.114] & $<$0.001 \\
+FY2022 & $-$0.122 & [$-$0.136, $-$0.108] & $<$0.001 \\
+\bottomrule
+\end{tabular}
+\par\smallskip
+{\scriptsize The development partition contains 115,896 employer-years from 67,984 employers. Weights are initial petition counts; confidence intervals are clustered by employer. Fiscal-year effects are relative to FY2017. Sector and state-group dummies are omitted; the full table is in \texttt{output/tables/wls\_coefficients.csv}.\par}
+\end{minipage}
+\end{table}
+
+\begin{figure*}[t]
+\centering
+\begin{minipage}{0.49\linewidth}
+\centering
+{\small\textbf{A}}\par
+\includegraphics[width=\linewidth]{figures/07_shap_bar.pdf}
+\end{minipage}\hfill
+\begin{minipage}{0.49\linewidth}
+\centering
+{\small\textbf{B}}\par
+\includegraphics[width=\linewidth]{figures/14_shap_bar_wages.pdf}
+\end{minipage}
+\caption{Mean absolute SHAP value by feature for the LightGBM rate model on sponsor-disjoint test rows. (A) Baseline features, all employer-years. (B) Baseline plus wage and occupation features, matched employer-years.}
+\label{fig:shap}
+\end{figure*}
+
+On the exact-match sample, wage and occupation features improve every model family. Figure \ref{fig:shap}B shows fiscal year still first (0.060), then modal occupation (0.024), industry (0.020), and prior denial (0.017); the wage ratio itself contributes 0.006. In WLS, agent or attorney share is associated with a 0.047 lower rate and H-1B-dependent share with a 0.045 higher rate (both $p<0.001$). The low-wage-level share has a small positive coefficient of 0.018 ($p=0.044$). The offered-to-prevailing ratio is $-0.013$ with $p=0.141$, and log LCA volume is not significant. The raw wage-band pattern is nonmonotonic, and the conditional WLS estimate does not support H3.
+
+\subsection*{Robustness}
+
+Table \ref{tab:robust} collects the checks. Dropping the two contemporaneous descriptors costs little for WLS ($R^2$ from 0.296 to 0.289) and more for LightGBM (0.419 to 0.364) and the classifiers (AUC 0.788 to 0.749 and 0.797 to 0.760), so current-year volume and composition carry real information, but the history-only models still predict. In that lagged-only WLS, prior-year denial rate keeps a coefficient of 0.360 ($p<0.001$).
+
+The fractional logit fits better than WLS on the same features. Over ten seeds it averages 0.356 against 0.303 on all rows and 0.463 against 0.363 with wages on the matched sample, and the paired gain is positive in every seed (0.053, SD 0.005, and 0.099, SD 0.011). It also changes one conclusion. On the log-odds scale the wage ratio coefficient is $-0.647$ ($p=0.001$) and log offered wage is $-0.399$ ($p<0.001$), while agent share ($-0.408$), dependent share (0.442), and log LCA filings ($-0.155$) keep their WLS signs at $p<0.001$. The null on the wage ratio therefore depends on the linear functional form. The hyperparameter grid barely moves the validation scores. Weighted $R^2$ spans 0.388 to 0.404 and AUC 0.796 to 0.797 across the eleven settings. The fixed configuration was set before tuning and scores 0.400; the best grid point improves validation $R^2$ by less than 0.004, so I kept the original setting and made no reselection.
+
+\begin{table}[t]
+\centering
+\caption{Robustness checks, seed 45 split}
+\label{tab:robust}
+\begin{minipage}{0.9\linewidth}
+\centering
+\begin{tabular}{llcc}
+\toprule
+Sample & Specification & Weighted $R^2$ & AUC \\
+\midrule
+All & Main, WLS / logistic & 0.296 & 0.788 \\
+All & Main, LightGBM & 0.419 & 0.797 \\
+All & Lagged-only, WLS / logistic & 0.289 & 0.749 \\
+All & Lagged-only, LightGBM & 0.364 & 0.760 \\
+\bottomrule
+\end{tabular}
+\par\smallskip
+{\scriptsize Lagged-only uses log prior-year initial petitions, prior-year continuing share, prior-year denial rate, prior active sponsor-years, and prior-year sponsor status. Fractional logit results are in Table \ref{tab:models}.\par}
+\end{minipage}
+\end{table}
+
+\subsection*{Temporal validation}
+
+Temporal validation is where the practical conclusion changes, because the petition-weighted denial rate is 15.0\% in 2017 to 2021 and 2.2\% in 2022. The pre-2022 LightGBM model predicts 11.6\% for 2022, and WLS returns weighted $R^2=-1.720$ against LightGBM's $-1.240$, where a negative value means the squared error exceeds that of assigning every 2022 row the weighted 2022 mean. Predictions for 2022 keep the ordering across employer profiles but sit about 9 points above the actual rate.
+
+Table \ref{tab:rolling} shows that the failure is not specific to 2022. Retraining each year on prior years only, LightGBM reaches a petition-weighted $R^2$ of 0.166 for 2018, 0.268 for 2019, and 0.129 for 2020, then $-1.261$ for 2021 and $-1.240$ for 2022; WLS follows the same path. In the two years with the largest shifts the level error dominates, with the 2018 model predicting 14.8\% against an actual 24.3\% and the 2021 model 15.6\% against 3.9\%. In 2019, when the rate stayed high, the model overshoots at 27.8\% against 21.1\% but still explains about a quarter of the weighted variance. Figure \ref{fig:temporal} plots both designs. Employer composition reproduces neither the 2018 peak nor the later decline, and one year of new labels does not correct the level once the regime has moved.
+
+\begin{table}[t]
+\centering
+\caption{Rolling-origin temporal validation, one step ahead}
+\label{tab:rolling}
+\begin{minipage}{0.98\linewidth}
+\centering
+\begin{tabular}{lcccccc}
+\toprule
+ & & \multicolumn{2}{c}{Predicted mean (\%)} & \multicolumn{2}{c}{Weighted $R^2$} \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}
+Test year & Actual (\%) & WLS & LightGBM & WLS & LightGBM \\
+\midrule
+2018 & 24.3 & 14.2 & 14.8 & 0.088 & 0.166 \\
+2019 & 21.1 & 28.0 & 27.8 & 0.243 & 0.268 \\
+2020 & 12.9 & 17.9 & 21.9 & 0.135 & 0.129 \\
+2021 & 3.9 & 8.0 & 15.6 & $-$1.311 & $-$1.261 \\
+2022 & 2.2 & 1.6 & 11.6 & $-$1.720 & $-$1.240 \\
+\bottomrule
+\end{tabular}
+\par\smallskip
+{\scriptsize Each row trains on all earlier fiscal years without a year feature and predicts the test year. LightGBM tunes its tree count on the year before the test year (a 20\% sponsor holdout of 2017 for the 2018 row). Means and $R^2$ are petition-weighted. Source: \texttt{output/tables/temporal\_rolling.csv}.\par}
+\end{minipage}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.86\linewidth]{figures/09_temporal_failure.pdf}
+\caption{Temporal validation. Dashed line, LightGBM tuned on FY2021 and refit through FY2021 without a year feature; dotted line, the rolling-origin model retrained each year on prior years only. Annual points are petition-weighted.}
+\label{fig:temporal}
+\end{figure}
+
+\section*{Discussion}
+
+The answer to the research question depends on the kind of generalization. For sponsors the model has never seen, in fiscal years it has, sponsor history, sector, geography, occupation, and filing characteristics identify relative risk, and the LightGBM advantage is stable across seeds. For a fiscal year the model has never seen, the same variables do not recover the level. H1a and H1b both receive support, H2 is supported in part, and the evidence for H3 is not robust across specifications.
+
+Fiscal year dominating within-period importance fits a limited street-level bureaucracy account and resembles the variation Ramji-Nogales and colleagues found across asylum judges \cite{ramjinogales2007}, aggregated here to years. The timing matches the documentary record, since the highest year effect follows the 2017 executive order, the deference rescission, and the 2018 worksite memorandum, and the lowest follow \emph{ITServe}, the 2020 withdrawal, and the 2021 restoration of deference \cite{eo13788,uscis2017deference,uscis2018memo,itserve2020,uscis2020rescind,uscis2021deference}. I cannot identify the effect of any one memorandum or decision, because several changed within months and fiscal year also absorbs applicant selection, case mix, and economic conditions. The narrower claim, which is H1b, is that a model trained in one adjudication period is not a durable decision rule. This is what the dataset-shift literature predicts when the label distribution moves \cite{quinonero2009}, and it is why the sponsor-disjoint results and the temporal validation are reported together.
+
+The H2 coefficients can be read through Spence's costly-signal argument \cite{spence1973}. Agent or attorney share is associated with fewer denials in every specification, with a log-odds coefficient of $-0.408$ in the fractional logit, prior-year sponsorship lowers the expected rate by 0.028, and a one-unit rise in the prior-year denial rate raises it by 0.348. These signs are what signaling predicts if counsel and continuity are costly marks of a routine case and a prior denial reveals a persistent case type. The same pattern is also consistent with case-mix selection, in which sponsors that hire counsel simply file stronger petitions, and employer-year data cannot separate the two; the prior-denial coefficient carries the most weight in either reading.
+
+For a student in my position the temporal failure has a plain meaning. A sponsor profile may still rank as relatively low risk, yet a model trained before a shift can badly miss the absolute risk in the next year. Sponsor-level features do not by themselves anticipate a program-wide movement like the decline from 24.3\% in 2018 to 2.2\% in 2022.
+
+The robustness table changed my reading of the wage evidence. Most certified positions use the two lowest wage levels, extending Costa and Hira's FY2019 finding \cite{costahira2020}. The wage ratio is not significant in WLS but is negative in the fractional logit. That disagreement makes H3 specification-sensitive; it does not establish a nonlinear effect or a mechanism. DOL wages are filing wages rather than payroll \cite{bourveau2025}, so both estimates describe what employers wrote on the form.
+
+Several limitations narrow what these results can support. USCIS provides employer-year counts, so a one-petition cell can only score zero or one, and petition weights give large sponsors more influence while the any-denial outcome rises mechanically with petition count. Exact name linkage misses 28.0\% of modeling employer-years and favors large sponsors, canonicalization cannot fully resolve subsidiaries or mergers, and a matched employer-year does not say which LCA supported which petition. Only six complete outcome years exist, and the design is observational.
+
+Future work should start from the rolling-origin result. With more post-change years, the same design can measure how many years of new labels a retrained model needs before its level error decays. Petition-level records obtained through a USCIS FOIA request, with request-for-evidence indicators and stable employer identifiers, would separate guidance effects from case mix in a way employer-year counts cannot, and a two-part model would treat the 79.7\% of cells with no denial directly.
+
+\section*{Agentic Analysis}
+
+I used NotebookLM, Codex, and Claude Code as organizers, auditors, and revision aids around work grounded in my numbered notebooks. I chose the research question, assembled the data, made the modeling decisions, interpreted the results, and took responsibility for the final wording. Codex produced an early draft from my notebook outputs, but I rewrote it section by section, checked every number against executed cells, and treated assistant prose as a claim to verify rather than as evidence.
+
+NotebookLM was most useful for structuring two literatures that answer different questions. The first examines the economic effects of H-1B access on firms, employment, wages, innovation, and offshoring \cite{doran2022,mahajan2025,peri2015,glennon2024,mayda2020,borjas2026,bourveau2025}. The second examines how administrative discretion, organizational pressure, and representation shape immigration decisions \cite{lipsky1980,ramjinogales2007,brodkin2011,eaglyshafer2015}. Comparing them helped me state the paper's gap: existing H-1B work studies what visas do, while the adjudication literature explains why formally similar cases may receive different treatment. I used Ke and Qiao as a computational precedent \cite{keqiao2021}, but rejected NotebookLM summaries that treated DOL certification and USCIS adjudication as the same outcome. I also corrected subgroup findings that it generalized too broadly, removed a citation outside my source set, and checked every retained claim in the original paper or policy document.
+
+The most consequential Codex audit found that the earlier file called 184,301 rows ``employer-years'' even though some employers appeared several times per year across worksite cells. I reproduced the duplicate-key and count-loss problems before accepting the diagnosis. I then rebuilt the panel at one canonical employer-year, added uniqueness and count-conservation assertions, position-weighted the wage-level measure, replaced full-panel tenure with prior active years, separated validation from the test set, and regenerated every result. A later Claude Code review checked the word count, primary policy citations, coefficient table, and SHAP figure. I accepted additions grounded in original documents or existing executed outputs, but rejected a policy-break regression that would merely restate year dummies without a new held-out year.
+
+The assistants also failed in ways that improved my checking procedure. The first Codex draft repeated the false employer-year label, accepted a conservation statement contradicted by its output, and mixed stale values across runs. NotebookLM sometimes dropped qualifications and blurred administrative stages. In the final rubric audit, Codex identified stale website claims and an imprecise table label; I verified both against the repository before correcting them. Across the reviews I rejected a plus-or-minus-one-year DOL join, causal language about particular policies, and the old claim that denial falls monotonically with size.
+
+Executed outputs, not assistant summaries, became the only source of numerical claims. I required assertions for key uniqueness, petition conservation, and zero employer overlap, and checked literature statements in their original sources. The tools helped organize scholarship, expose weaknesses, test consistency, and improve presentation; they did not replace the evidence, interpretation, or final decisions for which I am responsible. Preserved transcript excerpts and the decision record are in \href{https://github.com/MuhammadMoiz20/h1b-gatekeeping/blob/main/agentic_transcript.txt}{\texttt{agentic\_transcript.txt}} in the repository.
+
+\section*{Data and code availability}
+
+Code, derived data, executed notebooks, tables, and figures are available in the public \href{https://github.com/MuhammadMoiz20/h1b-gatekeeping}{GitHub repository}. Raw DOL workbooks are excluded because of size; download instructions are in the repository. The public \href{https://qss45-h1b.vercel.app}{project website} presents the question, data, methods, results, and takeaway.
+
+\acknow{I thank Professor Herbert Chang for guidance on the project design.}
+\showacknow
+
+\bibliography{references}
+
+\end{document}
