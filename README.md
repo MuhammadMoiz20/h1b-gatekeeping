@@ -35,6 +35,7 @@ code/                         sequential, executed notebooks
   02_merge.ipynb
   03_eda.ipynb
   04_models.ipynb
+  temporal_rank_check.py      rank metrics for the FY2022 temporal test (Spearman, AUC, deciles)
 data/                         USCIS inputs and reproducible derived panels
 output/
   figures/                    figures in 300-dpi PNG and vector PDF
