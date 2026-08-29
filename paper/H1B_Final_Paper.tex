@@ -224,7 +224,7 @@ Temporal validation is where the practical conclusion changes, because the petit
 
 Table \ref{tab:rolling} shows that the failure is not specific to 2022. Retraining each year on prior years only, LightGBM reaches a petition-weighted $R^2$ of 0.166 for 2018, 0.268 for 2019, and 0.129 for 2020, then $-1.261$ for 2021 and $-1.240$ for 2022; WLS follows the same path. In the two years with the largest shifts the level error dominates for LightGBM, with the 2018 model predicting 14.8\% against an actual 24.3\% and the 2021 model 15.6\% against 3.9\%; WLS instead recovers the 2022 level (1.6\% against 2.2\%) and fails through mis-ranking and negative fitted rates. In 2019, when the rate stayed high, the model overshoots at 27.8\% against 21.1\% but still explains about a quarter of the weighted variance. Figure \ref{fig:temporal} plots both designs. Employer composition reproduces neither the 2018 peak nor the later decline, and one year of new labels does not correct the level once the regime has moved.
 
-\begin{table}[t]
+\begin{table}[!htb]
 \centering
 \caption{Rolling-origin temporal validation, one step ahead}
 \label{tab:rolling}

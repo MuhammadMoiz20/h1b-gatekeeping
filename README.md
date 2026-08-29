@@ -88,7 +88,11 @@ The USCIS unit is one canonical employer in one fiscal year. Counts are summed a
 worksites; the state and industry attached to the largest worksite cell supply descriptive
 labels. Missing employer names receive unique placeholders rather than being dropped.
 On the DOL side, 61 certified LCA rows with a blank employer name cannot form a key and
-are dropped before the employer-year aggregation. The USCIS aggregation itself preserves
+are dropped before the employer-year aggregation. The FY2021 Q2 and Q3 DOL workbooks are
+cumulative year-to-date files (each repeats the earlier quarters of FY2021), so the FY2021
+stack contains roughly 278,000 repeated certified rows. Repetition leaves employer-year
+medians and shares unchanged but inflates FY2021 filing and position counts; the rows are
+not deduplicated, and the paper reports this as a limitation. The USCIS aggregation itself preserves
 757,806 initial approvals, 107,839 initial denials, 1,884,861 continuing approvals, and
 122,194 continuing denials exactly. The committed analysis panel then retains the 176,404
 employer-years with at least one initial petition. It therefore preserves both initial
