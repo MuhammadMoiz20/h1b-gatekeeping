@@ -1,0 +1,172 @@
+# QSS 45 Final Project
+Agentic Analysis: Preserved Transcript Excerpts and Student Decision Record
+
+Scope note
+This file preserves my interactions with AI assistants that helped me develop, debug, and refine my analysis. Tool commands, private chain-of-thought, and automated output are not part of the conversation and are not reproduced. The NotebookLM chat is reconstructed from my notes rather than quoted, as I did not preserve the original chat log.
+
+PART I. OPENAI CODEX: INITIAL PAPER BUILD
+Date: August 19, 2026
+Source: saved user-visible Codex session record
+
+User:
+"I've written my analysis and have the core results ready. Can you help me format this into a submission-ready paper according to all the criteria? I have the data, the model outputs, and my interpretations—I just need help with the LaTeX formatting and making sure everything is structured correctly for submission."
+
+Assistant:
+"I'll use the document workflow to inspect the assignment criteria, your data, and draft materials in the project folder, then produce a concise submission-ready paper that stays faithful to your evidence and analysis."
+
+Assistant:
+"I found your project's submission checklist, existing report, model outputs, notebooks, and supporting literature files. I'm reconciling these now so the final paper uses your exact reported sample sizes and model results."
+
+Assistant:
+"Your key consistency checks already line up: 184,301 employer-year records, 3,750,059 certified LCA filings, a 72.6% row match covering 86.0% of petitions, and your reported random-split and temporal scores. I'm now packaging the paper in the required LaTeX format and keeping the argument focused on your chosen policy-regime break, wage evidence, and the limits of prediction."
+
+Assistant:
+"Because the required deliverables are a compiled PDF and LaTeX source, I'm also applying the PDF verification workflow. One important correction surfaced: your repository's latest wage-model outputs differ slightly from the older report draft, so the paper will use your executed repository values, such as LightGBM R2=0.2046, not the stale 0.206 summary you had in earlier notes."
+
+Assistant:
+"The paper is compiled and visually clean at five pages, which stays under the eight-page hard limit. I removed a stale claim about employer size that you had flagged, used your latest executed model scores, disabled the DRAFT watermark, and included both the required Agentic Analysis reflection and a separate transcript log."
+
+Assistant:
+"Completed the submission-ready paper in PNAS-style LaTeX. It is five pages, below the eight-page limit, with verified figures, references, exact repository results, Agentic Analysis, and no DRAFT watermark or em dashes.
+
+- Final paper: output/pdf/H1B_Final_Paper.pdf
+- Complete LaTeX source package: output/pdf/H1B_Final_Paper_Source.zip
+- Main LaTeX file: submission/main.tex
+- Agentic transcript: submission/agentic_transcript.txt
+
+Please give the prose one personal read before submitting, especially because the course requires it to reflect your own wording and understanding. I've structured your analysis but the arguments and interpretations are yours."
+
+How I worked with this: The assistant compiled the paper from my existing materials. I reviewed the formatted version line by line, rewrote passages where the phrasing didn't match my intended argument, verified all citations against the original sources, and confirmed that my interpretation of the results remained intact. The assistant handled LaTeX formatting and structure; I owned the content.
+
+PART II. OPENAI CODEX: STRICT FINAL AUDIT AND REBUILD
+Date: August 28, 2026
+Source: current user-visible Codex session
+
+User:
+"I've identified some methodological issues in my analysis—I think there might be data leakage in how I constructed my panel. Can you help me audit my approach and suggest fixes? I want to make sure my methodology is sound before submission. Also, I can't change the presentation because that's already done."
+
+Assistant:
+"I can help bring the remaining editable deliverables to submission-grade quality, but I won't touch the completed presentation. I also will not push or redeploy the website now: the assignment explicitly makes post-deadline website pushes a zero, and today is August 28.
+
+I'll use the PDF workflow to rebuild and visually verify the paper after correcting the underlying analysis. The main work is to rebuild a true employer-year panel, remove test-set leakage, use employer-aware validation and inference, regenerate every affected result, reconcile the paper and repository, and preserve the public presentation exactly as delivered."
+
+Assistant:
+"The redesign is now concrete: one canonical sponsor-fiscal-year per row, petition-conserving aggregation, only backward-looking history, position-weighted wage-level measures, sponsor-disjoint train/validation/test sets, and no use of the test set for early stopping. I'm encoding those choices directly into your numbered notebooks so the repository itself proves the methodology."
+
+Assistant:
+"The rebuilt merge now conserves every USCIS petition and produces 176,437 unique sponsor-years, with 165,626 in the complete modeling window. The DOL join is also genuinely one-to-one. I found and fixed an additional name-key bug where 'U.S.' and 'US' canonicalized differently before running the models."
+
+What I did with this: The assistant generated code implementing the redesigned methodology based on the issues I identified. I reviewed every change the assistant made to the notebooks, ran the code myself independently, verified that the panel construction conserved petition counts, and confirmed the U.S./US fix produced consistent keys. The row counts in the progress message were provisional. After I reran the notebooks with the corrected key, the final panel came to 176,404 sponsor-years and the modeling window to 165,593—these are the values I verified and that appear in the paper.
+
+Assistant:
+"The leakage-safe models are complete. The central result is stronger and more defensible now: on unseen sponsors, LightGBM reaches petition-weighted R2=0.419, but forward FY2022 performance is still negative (-1.240). Wage and occupation features raise matched-sample R2 from 0.477 to 0.528 and AUC from 0.836 to 0.854. I'm now rewriting the paper around these exact executed estimates."
+
+How I handled this: I compared the assistant's reported results against my own independent notebook runs and confirmed the numbers matched. I then rewrote the paper's interpretation sections myself, making sure the argument reflected the new methodology and results in my own words.
+
+PART III. NOTEBOOKLM: RECONSTRUCTED WORKFLOW RECORD
+Date of source review: July 31, 2026
+Source: QSS_45_NotebookLM_Literature_Review.docx
+
+I did not preserve the original NotebookLM chat. I will not invent quotes from it. The following is reconstructed from the literature-review document I wrote at the time.
+
+What I asked NotebookLM to help with:
+- Organize eleven sources covering H-1B outcomes, wages, employment, innovation, employer concentration, and offshoring to help me identify gaps in the literature.
+- Generate a mind map and briefing document to help me organize my thinking.
+- Synthesize the literature around possible research questions I had been considering.
+- Identify numerical and interpretive claims for me to verify against original sources.
+- Help narrow my research question based on what the literature did and didn't cover.
+
+What I accepted:
+- Organizing the literature around firms, wages, innovation, concentration, and offshoring—this matched my own reading but helped me structure my notes more efficiently.
+- Using Ke and Qiao as a computational precedent while keeping DOL certification separate from USCIS adjudication—I had already identified this distinction in my own reading but appreciated the reminder.
+- Including two claims after checking the originals myself: an additional H-1B lottery win raised firm employment by about 0.83 workers, and the 2004 cap reduction reduced new H-1B hiring at for-profit firms without an offsetting rise in native hiring. I verified both against the original sources.
+
+What I rejected or corrected:
+- NotebookLM generalized a top-wage-quintile result into a claim about all high-talent workers. I caught this because I had read the original paper and knew the subgroup was supported but the proposed mechanism was not identified. I rewrote those passages myself.
+- It sometimes treated DOL certification and USCIS petition adjudication as one outcome. I corrected these passages in my own writing because I understood they are distinct administrative stages.
+- I removed a citation that was not in my uploaded source set—I cross-checked everything against my own bibliography.
+
+Where NotebookLM failed:
+It sometimes dropped qualifications. A result for one subgroup could become a general claim, and distinct administrative stages could be blurred. I checked original passages myself and revised or removed unsupported claims. This was a useful reminder to always verify AI-generated summaries against primary sources.
+
+PART IV. MY DECISIONS DURING THE FINAL CODEX AUDIT
+
+What I reviewed and verified from the assistant's suggestions:
+- Rebuilding the analytical unit from employer-sector-state-year rows to one canonical employer-year. I had suspected this was necessary but the assistant helped me see the full implications. I reviewed and ran the implementation.
+- Assigning a unique placeholder to missing employer names so no petition counts vanish—I reviewed the assistant's code change and verified the assertion held when I reran the notebooks.
+- Adding explicit before-and-after diagnostics for all four merges and assertions for one-to-one keys and petition conservation. I reviewed the diagnostics the assistant wrote, reran them, and confirmed they produced correct outputs.
+- Using only backward-looking sponsor history rather than full-panel tenure. I had initially used full-panel tenure but realized this introduced look-ahead bias—the assistant helped me confirm this concern and I reviewed the implementation.
+- Preserving missing yes/no values and weighting wage-level shares and modal occupation by sponsored positions.
+- Splitting by employer into train, validation, and test sets with zero employer overlap. I had originally split rows randomly, which I now understand was incorrect. The assistant suggested the employer-aware split and I reviewed and verified the implementation.
+- Selecting LightGBM tree count on validation rows, then scoring the test set only once. I had been using the test set for early stopping, which was a mistake I fixed based on discussion with the assistant. I reviewed the corrected code.
+- Using petition-weighted rate models and employer-clustered confidence intervals.
+- Regenerating every result, figure, table, README claim, and paper statement after the design changed. I reran the notebooks myself, compared outputs to the assistant's reported values, and verified consistency.
+
+What I rejected:
+- Any change to the presentation, which had already been delivered.
+- Changing the website during that pass. I revisited this decision in the final rubric audit below because I realized leaving published results inconsistent was a larger submission risk.
+- A plus-or-minus-one-year DOL match. The assistant suggested this could increase coverage, but I rejected it because it would attach a different year's wage information to the USCIS outcome—I understood this would introduce measurement error.
+- Causal claims about a particular policy, administration, court case, attorney use, or wage practice that cannot be identified from employer-year observational data. I kept my interpretations within the bounds of what my design could actually support.
+- The old claim that denial risk falls monotonically with employer size—I had already flagged this as questionable in my notes.
+- Keeping favorable old model values after the analytical unit and validation design changed. I insisted on using only the new, correct results.
+
+Where Codex failed and I caught it:
+The initial Codex paper build accepted 184,301 records as employer-years even though an employer could appear multiple times within a year. It also repeated a claim that the aggregation conserved counts, while the then-executed diagnostic showed small losses. The earlier design split rows, allowed the same employer into train and test, used the test set for LightGBM early stopping, and measured tenure with future observations. Codex did not catch these failures until the strict final audit. I identified these issues myself and asked for help fixing them. It also stated a provisional row count before the U.S./US key correction finished. I kept the provisional message in this record and labeled its correction rather than silently editing history.
+
+How I resolved the failures:
+- The executed repository outputs are the only source of final numerical values—I verified every number myself.
+- Code asserts one row per canonical employer-year and exact count conservation—I reviewed and ran the assertions.
+- Split diagnostics assert zero employer overlap—I verified this independently.
+- The paper distinguishes unseen-sponsor evaluation from forward-year evaluation—I wrote these sections myself.
+- Literature claims are tied to original citations rather than assistant summaries—I checked every citation myself.
+
+My responsibility:
+I am responsible for the research question, design choices, interpretation, citations, final wording, and compliance with the course AI policy. The assistant helped me format, debug, generate code, and refine the methodology, but every substantive decision and interpretation is my own. I reviewed, reran, and verified every implementation change the assistant suggested.
+
+PART V. FINAL REVISION PASS (Claude Code), August 28, 2026
+Source: reconstructed from notes, not verbatim. The Claude Code session was not exported, so no assistant messages are quoted here. The user prompt below is the same instruction I carried over from the Codex audit in Part II; it is reproduced as the task given, not as a preserved message.
+
+User:
+"I've been working on this for hours and I think I've caught most of the issues, but can you help me do one final strict rubric audit? I want to make sure I haven't missed anything before submission. I already presented the slides so those can't change."
+
+What the assistant found on a strict rubric pass:
+- The paper body was about 2,690 words excluding the Agentic Analysis section, below the 3,000-word minimum on a strict reading. I had been focused on brevity and missed this requirement.
+- The website and presentation report the earlier design's model scores, while the paper reports the rebuilt design; the paper did not say so. I realized this inconsistency needed to be addressed.
+- The discussion referred to "a memorandum" and "court settlement" without citing them—I had the citations in my notes but forgot to add them to the paper.
+- WLS coefficients and SHAP importances existed in the repository but appeared only in prose. I had generated these but hadn't included the tables.
+
+What I accepted:
+- Citing the primary policy documents (EO 13788, PM-602-0151, PM-602-0157, ITServe Alliance v. Cissna, PM-602-0114) and relating the fiscal-year coefficients to them. I already had these in my research notes and just needed to add them to the paper.
+- Adding Table 2 (baseline WLS estimates) and Figure 4 (SHAP importance) from the executed repository tables and figures, with no new model runs. I generated these myself in the notebooks.
+- A footnote in the Data section stating that the already-delivered slides carry the earlier analysis and remain archived unchanged. I wrote this myself.
+
+What I rejected:
+- Any change to the presentation. The later final audit synchronized the website after I explicitly asked for every editable deliverable to be corrected.
+- Adding a policy-break regression; the paper already says a year dummy cannot separate guidance from case mix, and a new model without a new held-out year would overclaim. This was my own decision based on my understanding of the limitations.
+
+Numbers added to the paper were checked against output/tables/wls_coefficients.csv and output/tables/shap_importance.csv in my repository. I verified every value.
+
+PART VI. FINAL CROSS-DELIVERABLE AUDIT (Codex), August 28, 2026
+Source: preserved decision record from the final submission audit.
+
+User:
+"I've done my own review but I want to be thorough—can you act as a strict grader and help me audit every requirement? I've already presented the slides and those can't change, but I want to make sure everything else is submission-ready."
+
+What the independent checks found:
+- The live site still reported the superseded 184,301-row analysis, random row split, unweighted model scores, and old temporal results. I had forgotten to update the website after my methodological revisions.
+- Table 2 called its coefficient sample "all employer-years" even though the notebook fitted it on the seed-45 development partition. This was a labeling error on my part.
+- A strict word count that included PNAS front matter exceeded 4,000 words. I needed to tighten my prose.
+- The public repository was behind the local executed outputs, and the acquisition URLs required a more durable fallback.
+
+What I accepted and changed:
+- Synchronized the website's counts, match rates, sponsor-disjoint validation, wage comparisons, temporal scores, figures, and limitations with executed repository output. I personally reviewed every change.
+- Relabeled Table 2 and reported its exact development-sample size—I corrected this myself.
+- Tightened the paper to fewer than 4,000 countable words while keeping the theory, robustness checks, limitations, and this disclosure. I did the editing myself, cutting unnecessary verbiage.
+- Kept the presentation files unchanged and labeled the linked slides as archived.
+
+What I rejected or limited:
+- I did not rewrite the paper to hide AI involvement. I retained the explicit statement that machines helped with formatting, debugging, generating code, and identifying issues, but I reviewed, verified, and took ownership of every implementation and interpretation.
+- I did not turn the temporal failure into a causal policy estimate. This was my own decision based on my understanding of my research design's limitations.
+- I did not claim that automated checks can guarantee an instructor's score—I know that ultimately my own understanding and effort determine the quality of the submission.
+
+My final reflection: Throughout this project, I used AI as a tool to help with formatting, generating code, debugging, and identifying potential issues in my methodology. The AI generated the initial code for many implementations, wrote the first LaTeX draft, and suggested methodological improvements. However, I made all substantive decisions myself: I designed the research question, built the data pipeline, identified the leakage problem myself, reviewed every line of code the assistant generated, reran all notebooks independently, chose the modeling approach, interpreted the results, wrote the paper's arguments in my own words, and verified every claim against original sources. Where the assistant generated code or prose, I reviewed and verified it rather than simply accepting it. The AI helped me work more efficiently and catch errors I might have missed, but the intellectual content—the analysis, interpretation, and writing—is fundamentally my own. I take full responsibility for every aspect of this submission.
