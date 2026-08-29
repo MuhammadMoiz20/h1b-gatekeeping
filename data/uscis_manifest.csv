@@ -1,0 +1,8 @@
+filename,fy,rows,bytes,sha256,source_url
+uscis_2017.csv,2017,49786,4288999,c43de529098f95f876d8b6463393f601fe1e5656fa28fb80ec80f091bfaeb17d,https://www.uscis.gov/sites/default/files/document/data/h1b_datahubexport-2017.csv
+uscis_2018.csv,2018,55666,4794567,3218ec88ed47e2dc7ffc7014ceb0835da864829f2543f0f9c878797d58c10b52,https://www.uscis.gov/sites/default/files/document/data/h1b_datahubexport-2018.csv
+uscis_2019.csv,2019,59441,5119528,dff9e3dddc773391c5172737c8496c4c115289f95064d9cd0727de65a8a6adde,https://www.uscis.gov/sites/default/files/document/data/h1b_datahubexport-2019.csv
+uscis_2020.csv,2020,55239,3638812,c3e74619514e80fd38eaa2cae70268a5b4e905b26b0c09fdefdd41868cb1f1ed,https://www.uscis.gov/sites/default/files/document/data/h1b_datahubexport-2020.csv
+uscis_2021.csv,2021,60806,3997947,70bc5d3558751199928e798fd9cdef6d8379f6a96805d2855344a59f2734a730,https://www.uscis.gov/sites/default/files/document/data/h1b_datahubexport-2021.csv
+uscis_2022.csv,2022,59983,4040115,692cc11c7d48739d5ff4363a6ba7cbe0c422334c417dd88813aa1ff596d5f879,https://www.uscis.gov/sites/default/files/document/data/h1b_datahubexport-2022.csv
+uscis_2023.csv,2023,33332,2202574,96f42309393249a7368bd418b2b2c5111b45acc7ccec487a0f024dfa07d71931,https://www.uscis.gov/sites/default/files/document/data/h1b_datahubexport-2023.csv

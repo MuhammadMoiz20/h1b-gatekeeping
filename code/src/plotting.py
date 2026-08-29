@@ -20,7 +20,7 @@ mpl.rcParams.update({
     "font.size": 13, "text.color": INK,
     "axes.labelcolor": INK2, "axes.edgecolor": MUTED, "axes.linewidth": 0.8,
     "axes.spines.top": False, "axes.spines.right": False,
-    "axes.titlesize": 14, "axes.titleweight": "600", "axes.titlelocation": "left",
+    "axes.titlesize": 14, "axes.titleweight": "bold", "axes.titlelocation": "left",
     "axes.titlepad": 10,
     "xtick.color": INK2, "ytick.color": INK2,
     "xtick.direction": "out", "ytick.direction": "out",

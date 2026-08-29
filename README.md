@@ -50,7 +50,7 @@ Run the notebooks in numeric order. Each documents its inputs, function, and out
 
 | # | Notebook | Inputs | Function | Outputs |
 |---|---|---|---|---|
-| 00 | `00_pull.ipynb` | USCIS download URLs; inventory of DOL files | Download and validate seven USCIS Employer Data Hub files; document manual DOL acquisition | `data/uscis_2017.csv` … `data/uscis_2023.csv` |
+| 00 | `00_pull.ipynb` | USCIS download URLs; input manifests for both agencies | Download and checksum seven USCIS Employer Data Hub files; verify the manual DOL acquisition | `data/uscis_2017.csv` … `data/uscis_2023.csv` |
 | 01 | `01_extract_lca.ipynb` | 15 DOL disclosure workbooks in `data/lca/` | Stream three historical workbook layouts and retain the required columns | `data/lca_slim/lca_*.csv` |
 | 02 | `02_merge.ipynb` | USCIS annual CSVs; slim LCA CSVs | Build canonical employer-years, backward-looking history, cleaned wage measures, and the exact employer-year agency join | `data/analysis_panel.csv`, `data/lca_employer_year.csv`, `data/analysis_panel_wages.csv`; merge diagnostic tables |
 | 03 | `03_eda.ipynb` | `data/analysis_panel_wages.csv` | Describe outcomes, sponsors, sectors, match selection, and wage patterns | figures 01–05 and 10–12; `output/tables/eda_*.csv` |
@@ -84,8 +84,12 @@ The USCIS unit is one canonical employer in one fiscal year. Counts are summed a
 worksites; the state and industry attached to the largest worksite cell supply descriptive
 labels. Missing employer names receive unique placeholders rather than being dropped.
 On the DOL side, 61 certified LCA rows with a blank employer name cannot form a key and
-are dropped before the employer-year aggregation. This design preserves 757,806 initial approvals, 107,839 initial denials, 1,884,861
-continuing approvals, and 122,194 continuing denials exactly.
+are dropped before the employer-year aggregation. The USCIS aggregation itself preserves
+757,806 initial approvals, 107,839 initial denials, 1,884,861 continuing approvals, and
+122,194 continuing denials exactly. The committed analysis panel then retains the 176,404
+employer-years with at least one initial petition. It therefore preserves both initial
+counts but, by design, excludes continuation-only records; its continuing counts are
+1,637,883 approvals and 107,629 denials.
 
 The DOL pipeline retains certified H-1B LCAs, annualizes all wage units, rejects implausible
 annual wage fields before constructing ratios, and keeps missing yes/no values missing.
@@ -184,24 +188,33 @@ patterns recover a new year's outcome level.
 
 ## Reproduce
 
+There are two reproducibility paths. A results-only rerun uses the committed derived panel
+and needs no manual downloads; after creating the environment, run notebooks 03 and 04.
+That regenerates every reported figure, estimate, metric, and robustness table.
+
 ```bash
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 
 cd code
-../.venv/bin/jupyter nbconvert --to notebook --execute --inplace 00_pull.ipynb
-../.venv/bin/jupyter nbconvert --to notebook --execute --inplace 01_extract_lca.ipynb
-../.venv/bin/jupyter nbconvert --to notebook --execute --inplace 02_merge.ipynb
 ../.venv/bin/jupyter nbconvert --to notebook --execute --inplace 03_eda.ipynb
 ../.venv/bin/jupyter nbconvert --to notebook --execute --inplace 04_models.ipynb
 ```
 
-The raw DOL workbooks total roughly 1.8 GB and are excluded from Git. The USCIS files and
+An end-to-end rebuild additionally requires the 15 raw DOL workbooks listed below. They
+total roughly 1.8 GB and are excluded from Git. After placing them in `data/lca/`, run all
+five notebooks in numeric order with the same `nbconvert` command. Notebook 01 takes about
+20–40 minutes on a cold run; notebooks 00 and 01 verify their inputs before processing.
+
+The USCIS files and
 the DOL workbooks used here were downloaded on 2026-08-28 from the
 [DOL OFLC performance data page](https://www.dol.gov/agencies/eta/foreign-labor/performance)
-and the USCIS Employer Data Hub. Place the 15 DOL workbooks in `data/lca/` under these names
-(the inventory in `00_pull.ipynb` checks them). `data/lca_manifest.csv` records the exact
-byte size and SHA-256 checksum of every workbook used in the submitted analysis:
+and the [USCIS H-1B Employer Data Hub archive](https://www.uscis.gov/archive/h-1b-employer-data-hub-files).
+`data/uscis_manifest.csv` records the source URL, row count, byte size, and SHA-256 checksum
+for every distributed USCIS file; notebook 00 verifies each file against it. Place the 15
+DOL workbooks in `data/lca/` under these names (the inventory in `00_pull.ipynb` checks
+them). `data/lca_manifest.csv` records the exact byte size and SHA-256 checksum of every
+workbook used in the submitted analysis:
 
 ```text
 LCA_FY2017.xlsx  LCA_FY2018.xlsx  LCA_FY2019.xlsx
